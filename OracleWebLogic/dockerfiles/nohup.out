@@ -1,0 +1,136 @@
+Set- WebLogic's Version 12.2.1.4
+Set- Distribution:Developer
+./buildDockerImage.sh: option requires an argument -- c
+Unknown error while processing options inside buildDockerImage.sh
+Version= 12.2.1.4 Distribution= developer
+Checking if required packages are present and valid...
+fmw_12.2.1.4.0_wls_quick_Disk1_1of1.zip: OK
+md5sum: WARNING: 1 line is improperly formatted
+=====================
+Building image 'oracle/weblogic:12.2.1.4-developer' ...
+Building image using Dockerfile.'developer'
+Sending build context to Docker daemon  235.8MB
+Step 1/21 : FROM oracle/serverjre:8 as builder
+ ---> 6062fed4e8fd
+Step 2/21 : LABEL "provider"="Oracle"                                                     "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"             "issues"="https://github.com/oracle/docker-images/issues"               "port.admin.listen"="7001"                                              "port.administration"="9002"
+ ---> Running in a67f66a7a757
+Removing intermediate container a67f66a7a757
+ ---> 048458e55b46
+Step 3/21 : ENV ORACLE_HOME=/u01/oracle     MW_HOME=/u01/oracle     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom"     PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin
+ ---> Running in c0cf3cbcf0be
+Removing intermediate container c0cf3cbcf0be
+ ---> 09c435ba33ec
+Step 4/21 : RUN mkdir /u01 &&     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle &&     chown oracle:root -R /u01 &&     chmod -R 775 /u01
+ ---> Running in 0005aa5a9122
+Removing intermediate container 0005aa5a9122
+ ---> 7a348c3ecba7
+Step 5/21 : ENV FMW_PKG=fmw_12.2.1.4.0_wls_quick_Disk1_1of1.zip     FMW_JAR=fmw_12.2.1.4.0_wls_quick.jar
+ ---> Running in 950fc5848a35
+Removing intermediate container 950fc5848a35
+ ---> 351eab87a4ee
+Step 6/21 : COPY --chown=oracle:root $FMW_PKG install.file oraInst.loc /u01/
+ ---> d4acf027ec6f
+Step 7/21 : USER oracle
+ ---> Running in 0e1bebf33a12
+Removing intermediate container 0e1bebf33a12
+ ---> 0bade6567519
+Step 8/21 : RUN cd /u01 && ${JAVA_HOME}/bin/jar xf /u01/$FMW_PKG && cd - &&     ${JAVA_HOME}/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME &&     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/install.file &&     rm -rf /u01/oracle/cfgtoollogs
+ ---> Running in d26400d01edf
+/
+Launcher log file is /tmp/OraInstall2021-03-15_01-20-07PM/launcher2021-03-15_01-20-07PM.log.
+Extracting the installer . . . . . Done
+Checking if CPU speed is above 300 MHz.   Actual 1190.385 MHz    Passed
+Checking swap space: must be greater than 512 MB.   Actual 3279 MB    Passed
+Checking if this platform requires a 64-bit JVM.   Actual 64    Passed (64-bit not required)
+Checking temp space: must be greater than 300 MB.   Actual 12351 MB    Passed
+Preparing to launch the Oracle Universal Installer from /tmp/OraInstall2021-03-15_01-20-07PM
+Log: /tmp/OraInstall2021-03-15_01-20-07PM/install2021-03-15_01-20-07PM.log
+Setting ORACLE_HOME...
+
+*****************************************************
+
+
+Distribution Name : Oracle Fusion Middleware 12c WebLogic and Coherence Developer
+Distribution Version : 12.2.1.4.0
+
+Oracle Inventory : /u01/oracle/.inventory
+
+Oracle Home : /u01/oracle
+Java Home : /usr/java/jdk-8
+
+*****************************************************
+
+Copyright (c) 1996, 2019, Oracle and/or its affiliates. All rights reserved.
+Reading response file..
+Skipping Software Updates
+Validations are disabled for this session.
+Verifying data
+Copying Files
+Percent Complete : 10
+Percent Complete : 20
+Percent Complete : 30
+Percent Complete : 40
+Percent Complete : 50
+Percent Complete : 60
+Percent Complete : 70
+Percent Complete : 80
+Percent Complete : 90
+Percent Complete : 100
+
+The installation of Oracle Fusion Middleware 12c WebLogic and Coherence Developer 12.2.1.4.0 completed successfully.
+Logs successfully copied to /u01/oracle/cfgtoollogs/oui.
+Removing intermediate container d26400d01edf
+ ---> a370ea33a8af
+Step 9/21 : FROM oracle/serverjre:8
+ ---> 6062fed4e8fd
+Step 10/21 : ENV ORACLE_HOME=/u01/oracle     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom"     SCRIPT_FILE=/u01/oracle/container-scripts/createAndStartEmptyDomain.sh     HEALTH_SCRIPT_FILE=/u01/oracle/container-scripts/get_healthcheck_url.sh     PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin
+ ---> Running in 2683406e1fc0
+Removing intermediate container 2683406e1fc0
+ ---> 42e64ff5dd75
+Step 11/21 : ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}"     ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}"      ADMIN_NAME="${ADMIN_NAME:-AdminServer}"     DEBUG_FLAG=true     PRODUCTION_MODE=dev     ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-true}"     ADMINISTRATION_PORT="${ADMINISTRATION_PORT:-9002}"
+ ---> Running in 554443d41021
+Removing intermediate container 554443d41021
+ ---> d19f2d086294
+Step 12/21 : RUN mkdir -p /u01 &&     chmod 775 /u01 &&     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle &&     chown oracle:root /u01
+ ---> Running in 72e309c4fae6
+Removing intermediate container 72e309c4fae6
+ ---> 1aa887899660
+Step 13/21 : COPY --from=builder --chown=oracle:root /u01 /u01
+ ---> ab6b70197af6
+Step 14/21 : RUN mkdir -p /u01/oracle/container-scripts/despliegue
+ ---> Running in 08b1a6a65379
+Removing intermediate container 08b1a6a65379
+ ---> 6820bdc859b1
+Step 15/21 : COPY container-scripts/ /u01/oracle/container-scripts
+ ---> 7badbdd43cea
+Step 16/21 : COPY container-scripts/despliegue/ /u01/oracle/container-scripts/despliegue
+ ---> 0d6eca1a0d2b
+Step 17/21 : RUN chmod +xr $HEALTH_SCRIPT_FILE &&     chown oracle:root /u01/oracle/container-scripts/despliegue/simple-app.war /u01/oracle/container-scripts/create-wls-domain.py $HEALTH_SCRIPT_FILE
+ ---> Running in 37b37f6b644f
+Removing intermediate container 37b37f6b644f
+ ---> dae85cb6563c
+Step 18/21 : USER oracle
+ ---> Running in 38340bf9643b
+Removing intermediate container 38340bf9643b
+ ---> b9c7ca0e012a
+Step 19/21 : HEALTHCHECK --start-period=10s --timeout=30s --retries=3  CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
+ ---> Running in 2bf2959a0a8c
+Removing intermediate container 2bf2959a0a8c
+ ---> 243346c03e0b
+Step 20/21 : WORKDIR ${ORACLE_HOME}
+ ---> Running in c9a93f9a7553
+Removing intermediate container c9a93f9a7553
+ ---> 7a552c959a86
+Step 21/21 : CMD ["/u01/oracle/container-scripts/createAndStartEmptyDomain.sh"]
+ ---> Running in 25ad9c9a0dbd
+Removing intermediate container 25ad9c9a0dbd
+ ---> 0c849bca9c1f
+Successfully built 0c849bca9c1f
+Successfully tagged oracle/weblogic:12.2.1.4-developer
+
+  WebLogic Docker Image for 'developer' version 12.2.1.4 is ready to be extended:
+
+    --> oracle/weblogic:12.2.1.4-developer
+
+  Build completed in 411 seconds.
+
